@@ -97,6 +97,7 @@ function CheckPatternEnhancers()
 			newMiddlePos:Add(ent:GetPos())
 		end
 
+		local ent = connectedEnts[1]
 		if not IsValid(ent) then continue end
 
 		newMiddlePos:Div(#connectedEnts)
@@ -338,7 +339,7 @@ function CheckMiddlePos(middlePos)
 	local tr = util.TraceLine({
 		start = middlePos + offset,
 		endpos = middlePos - Vector(0, 0, 10),
-		mask = MASK_SOLID,
+		mask = MASK_SOLID_BRUSHONLY,
 	})
 
 	if tr.AllSolid then
