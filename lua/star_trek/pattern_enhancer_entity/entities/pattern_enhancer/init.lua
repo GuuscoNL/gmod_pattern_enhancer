@@ -32,7 +32,7 @@ local offset = Vector(0, 0, 43)
 	TODO:
 	[X] Trace between pattern enhancers
 	[X] Trace in middle
-	[ ] distances within 10 procent
+	[X] distances within 10 procent
 	[ ] humm sound
 --]]
 
@@ -74,6 +74,7 @@ function ENT:Initialize()
 	end
 end
 
+-- Check if the pattern enhancers are still in a valid position
 function CheckPatternEnhancers()
 	if table.IsEmpty(connectedEnhancers) then return end
 
@@ -99,8 +100,9 @@ function CheckPatternEnhancers()
 
 		local ent = connectedEnts[1]
 		if not IsValid(ent) then continue end
-
 		newMiddlePos:Div(#connectedEnts)
+
+		-- Update the transporter location
 		for i, externalData in pairs(Star_Trek.Transporter.Externals) do
 			if externalData.Name ~= connection["locName"] then continue end
 
@@ -134,6 +136,7 @@ end
 function ENT:OnRemove()
 	self:TurnOff()
 
+	-- Remove the timer if there are no more pattern enhancers
 	local AllClassObjects = ents.FindByClass("pattern_enhancer")
 	if #AllClassObjects <= 0 then
 		timer.Remove("patternEnhancersCheckDistAng")
@@ -141,12 +144,14 @@ function ENT:OnRemove()
 end
 
 function ENT:OnTakeDamage(damage)
+	-- Make the pattern enhancer react to the damage
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
 		phys:EnableMotion(true)
 		phys:ApplyForceCenter(damage:GetDamageForce())
 	end
 
+	-- Create the effect
 	local effectdata = EffectData()
 	effectdata:SetOrigin(damage:GetDamagePosition())
 	util.Effect("StunstickImpact", effectdata)
@@ -190,7 +195,7 @@ function ENT:UpdateScannerData()
 	local connectionIndex = self:CheckIndexConnectedEnhancers()
 
 	local transporterLocName = "None"
-	if connectionIndex ~= 0 then -- self is not connected to anything so return
+	if connectionIndex ~= 0 then -- self is not connected to anything
 		transporterLocName = connectedEnhancers[connectionIndex]["locName"]
 	end
 	self.ScannerData = active .. "\nTransporter Location: " .. transporterLocName
@@ -205,8 +210,12 @@ function ENT:StartConnection()
 	end
 
 	for _, other in ipairs(self:FindNearbyPatternEnhancers()) do
-		if not other:IsValidNewConnection(self) or not other:IsValidNewConnection(self) then continue end
-		success, finalTrail = other:ContinueConnection(table.Copy(orgTrail), 1)
+		if not other:IsValidNewConnection(self) or not other:IsValidNewConnection(self) then
+			continue
+		end
+		
+		local dist = self:GetPos():Distance(other:GetPos())
+		success, finalTrail = other:ContinueConnection(table.Copy(orgTrail), 1, dist)
 		if success then break end
 	end
 
@@ -218,16 +227,25 @@ function ENT:StartConnection()
 	end
 end
 
-function ENT:ContinueConnection(currentTrail, depth)
+--[[
+	depth: how many pattern enhancers are already connected
+	dist: distance between the first and last pattern enhancer
+]]
+function ENT:ContinueConnection(currentTrail, depth, dist)
 	if depth >= MAX_DEPTH then return false, {} end
 
 	local orgStartEnhancer = currentTrail[1]
+
 	for _, other in ipairs(self:FindNearbyPatternEnhancers()) do
 		local newTrail = table.Copy(currentTrail)
 
+		-- is the other the same as the original start enhancer
 		if other:EntIndex() == orgStartEnhancer:EntIndex() then
-			-- connection found succesfully
+			-- check if the trail is long enough and if the other is valid
 			if #currentTrail >= 2 and self:CheckDistWith(other) and other:CheckTrace(self) then
+				if not distAlmostEqualToDist(dist, self:GetPos():Distance(other:GetPos())) then
+					continue
+				end
 				table.insert(newTrail, self)
 
 				return true, newTrail
@@ -235,18 +253,31 @@ function ENT:ContinueConnection(currentTrail, depth)
 			continue
 		end
 
+		-- check if already connected and if the other is valid
 		if table.HasValue(currentTrail, other:EntIndex()) or not other:IsValidNewConnection(self) then
 			continue
 		end
 
+		-- check if the distance is almost the same as the first distance so 
+		-- that the pattern enhancers are similair to a equilateral triangle
+		if not distAlmostEqualToDist(dist, self:GetPos():Distance(other:GetPos())) then
+			continue
+		end
 		table.insert(newTrail, self)
-		local success, trail = other:ContinueConnection(newTrail, depth + 1)
+
+		local success, trail = other:ContinueConnection(newTrail, depth + 1, dist)
 		if success then return true, trail end
 	end
 
 	return false, {}
 end
 
+-- returns true if the distance is almost the same
+function distAlmostEqualToDist(dist, curDist)
+	return math.abs((curDist - dist) / ((curDist + dist) / 2)) < 0.25
+end
+
+-- returns true if the trace is not blocked
 function ENT:CheckTrace(other)
 	local offset1 = Vector(offset:Unpack())
 	local offset2 = Vector(offset:Unpack())
@@ -265,6 +296,7 @@ function ENT:CheckTrace(other)
 	return true
 end
 
+-- returns true if the other is a valid new connection
 function ENT:IsValidNewConnection(other)
 	if self:GetNWBool("active") and not self.connected and self:CheckAngle() and not self.HoloMatter then
 		return self:CheckTrace(other)
@@ -273,6 +305,7 @@ function ENT:IsValidNewConnection(other)
 	end
 end
 
+-- returns all pattern enhancers within the radius
 function ENT:FindNearbyPatternEnhancers()
 	local AllClassObjects = ents.FindByClass("pattern_enhancer")
 
@@ -285,8 +318,7 @@ function ENT:FindNearbyPatternEnhancers()
 	return objects
 end
 
--- returns the index of where self is in the connectedEnhancers table
--- returns 0 if not in connectedEnhancers table
+-- returns the index of the connected enhancers table otherwise 0
 function ENT:CheckIndexConnectedEnhancers()
 	for i, connection in ipairs(connectedEnhancers) do
 		if table.HasValue(connection["connectedEnts"], self) then
@@ -335,6 +367,7 @@ function ENT:RemoveConnection()
 	UpdateConnectedEnhancers()
 end
 
+-- returns true if the middle position is valid
 function CheckMiddlePos(middlePos)
 	local tr = util.TraceLine({
 		start = middlePos + offset,
@@ -352,12 +385,14 @@ function CheckMiddlePos(middlePos)
 end
 
 function ENT:AddConnection(connenctedTable)
+	-- claculate the middle position
 	local middlePos = Vector(0,0,0)
 	for i, ent in ipairs(connenctedTable) do
 		middlePos:Add(ent:GetPos())
 	end
-
 	middlePos:Div(#connenctedTable)
+
+	-- Check if the middle position is valid
 	local success, middlePosValid = CheckMiddlePos(middlePos)
 	if not success then
 		local connectionIndex = self:CheckIndexConnectedEnhancers()
@@ -391,6 +426,7 @@ function ENT:AddConnection(connenctedTable)
 		ent.connected = true
 		ent:UpdateScannerData()
 		ent:EmitSound("oninoni/startrek/pattern_enhancer_startup.mp3", 75, 100, 0.75)
+
 		local phys = ent:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(false)
@@ -399,6 +435,7 @@ function ENT:AddConnection(connenctedTable)
 	UpdateConnectedEnhancers()
 end
 
+-- Send the connected enhancers to the clients
 util.AddNetworkString("UpdatePatternEnhancersConnected")
 function UpdateConnectedEnhancers(ply)
 	net.Start("UpdatePatternEnhancersConnected")
