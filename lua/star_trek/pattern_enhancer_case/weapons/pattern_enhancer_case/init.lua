@@ -74,6 +74,7 @@ function SWEP:SecondaryAttack()
 	end
 end
 
+-- Check if the normal is within 25 degrees of the world up vector
 function SWEP:CheckAngle(normal)
 	local worldUp = Vector(0, 0, 1)
 
@@ -85,6 +86,7 @@ function SWEP:CheckAngle(normal)
 	return angle <= 25
 end
 
+-- Update the bodygroup of the weapon
 function SWEP:UpdatePatternEnhacerBodygroup()
 
 	local bodygroup = "0000" -- why 4? no idea :)
@@ -99,11 +101,13 @@ function SWEP:UpdatePatternEnhacerBodygroup()
 	self:SetNWString("bodyGroups", bodygroup)
 end
 
+-- Drop the weapon with the correct bodygroup
 hook.Add("PlayerDroppedWeapon", "Star_Trek.Transporter.Enhancer_case_drop", function(ply, weapon)
 	if weapon:GetClass() ~= "pattern_enhancer_case" then return end
 	weapon:SetBodyGroups(weapon:GetNWString("bodyGroups"))
 end)
 
+-- Prevent picking up the weapon if the player already has one
 hook.Add("PlayerCanPickupWeapon", "Star_Trek.Transporter.Enhancer_case_pickup", function(ply, weapon)
 	if weapon:GetClass() ~= "pattern_enhancer_case" then return end
 
