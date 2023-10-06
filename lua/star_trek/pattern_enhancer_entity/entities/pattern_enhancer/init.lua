@@ -28,13 +28,13 @@ local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, locName = na
 local AllIds = {}
 local offset = Vector(0, 0, 43)
 
---[[
-	TODO:
-	[X] Trace between pattern enhancers
-	[X] Trace in middle
-	[X] distances within 10 procent
-	[ ] humm sound
---]]
+sound.Add({
+	name = "pattern_enhancer_hum",
+	channel = CHAN_AUTO,
+	volume = 0.2,
+	level = 80,
+	pitch = 100,
+	sound = "ambient/energy/force_field_loop1.wav"})
 
 function ENT:SpawnFunction(ply, tr, ClassName)
 	if not tr.Hit then return end
@@ -274,7 +274,7 @@ end
 
 -- returns true if the distance is almost the same
 function distAlmostEqualToDist(dist, curDist)
-	return math.abs((curDist - dist) / ((curDist + dist) / 2)) < 0.25
+	return math.abs((curDist - dist) / ((curDist + dist) / 2)) < 0.35
 end
 
 -- returns true if the trace is not blocked
@@ -359,6 +359,11 @@ function ENT:RemoveConnection()
 		ent:UpdateScannerData()
 		ent:EmitSound("oninoni/startrek/pattern_enhancer_startup.mp3", 75, 80, 0.75)
 
+		if ent.soundLoopID ~= nil then
+			ent:StopLoopingSound(ent.soundLoopID)
+			ent.soundLoopID = nil
+		end
+
 		local phys = ent:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(true)
@@ -426,6 +431,7 @@ function ENT:AddConnection(connenctedTable)
 		ent.connected = true
 		ent:UpdateScannerData()
 		ent:EmitSound("oninoni/startrek/pattern_enhancer_startup.mp3", 75, 100, 0.75)
+		ent.soundLoopID = self:StartLoopingSound("pattern_enhancer_hum")
 
 		local phys = ent:GetPhysicsObject()
 		if IsValid(phys) then
