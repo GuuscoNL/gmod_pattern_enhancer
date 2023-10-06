@@ -1,0 +1,10 @@
+"VertexlitGeneric"
+{
+	$basetexture  crazycanadian\tools\pattern_enhancer\case_diffuse
+	$envmapmask crazycanadian\tools\pattern_enhancer\case_roughness
+	
+	$envmap env_cubemap
+	$envmapcontrast 1
+	$envmapsaturation 1
+	$envmaptint "[ 0.6 0.6 0.6]"
+}

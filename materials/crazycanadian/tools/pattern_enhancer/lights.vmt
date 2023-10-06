@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	$basetexture "crazycanadian/tools/pattern_enhancer/light"
+
+	$selfillum 1
+}
