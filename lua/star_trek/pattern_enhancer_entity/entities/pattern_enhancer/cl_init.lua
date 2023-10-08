@@ -1,14 +1,10 @@
 ---------------------------------------
 ---------------------------------------
---         Star Trek Modules         --
+--   This file is protected by the   --
+--           MIT License.            --
 --                                   --
---            Created by             --
---       Jan 'Oninoni' Ziegler       --
---                                   --
--- This software can be used freely, --
---    but only distributed by me.    --
---                                   --
---    Copyright © 2022 Jan Ziegler   --
+--   See LICENSE for full            --
+--   license details.                --
 ---------------------------------------
 ---------------------------------------
 
