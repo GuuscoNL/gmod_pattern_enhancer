@@ -144,7 +144,8 @@ function ENT:OnTakeDamage(damage)
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
 		phys:EnableMotion(true)
-		phys:ApplyForceCenter(damage:GetDamageForce())
+		-- apply force based on weight
+		phys:ApplyForceOffset(damage:GetDamageForce() * phys:GetMass() / 100, damage:GetDamagePosition())
 	end
 
 	-- Create the effect
