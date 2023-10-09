@@ -24,6 +24,11 @@ local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, locName = na
 local AllIds = {}
 local offset = Vector(0, 0, 43)
 
+-- Remove all connections when lua reloads, otherwise the pattern enhancers are broken
+for i, ent in ipairs(ents.FindByClass("pattern_enhancer")) do
+	ent:RemoveConnection()
+end
+
 sound.Add({
 	name = "pattern_enhancer_hum",
 	channel = CHAN_AUTO,
@@ -502,6 +507,18 @@ function UpdateConnectedEnhancers(ply)
 end
 
 -- Sync connected enhancers with newly joined players.
-hook.Add("PlayerInitialSpawn", "StarTrek.PatternEnhancer.SyncConnectedBeams", function( ply )
+hook.Add("PlayerInitialSpawn", "StarTrek.PatternEnhancer.PlayerInitialSpawn", function(ply)
 	UpdateConnectedEnhancers(ply)
+end)
+
+hook.Add("Star_Trek.Transporter.IgnoreTransportEntity", "StarTrek.PatternEnhancer.IgnoreTransportEntity", function(ent)
+	return ent:GetClass() == "pattern_enhancer" and ent:GetNWBool("active")
+end)
+
+hook.Add("Star_Trek.Transporter.IgnoreInterference", "StarTrek.PatternEnhancer.IgnoreInterference", function(data, pos)
+	for i, externalData in pairs(Star_Trek.Transporter.Externals) do
+		if externalData.IgnoreInterference and externalData.Pos:Distance(pos) <= 40 then
+			return data.Type ~= "Unknown"
+		end
+	end
 end)
