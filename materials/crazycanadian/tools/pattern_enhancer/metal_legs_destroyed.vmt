@@ -1,0 +1,16 @@
+UnlitGeneric
+{
+	$basetexture "crazycanadian/tools/pattern_enhancer/metal_legs_destroyed_d"
+	$bumpmap "crazycanadian/tools/pattern_enhancer/metal_legs_destroyed_n"
+	$surfaceprop Metal
+
+	$envmap "env_cubemap"
+	$normalmapalphaenvmapmask 1
+	$envmaptint "[0.47 0.47 0.47]"
+	$envmapcontrast 1
+	$fresnelreflection 0.85
+
+	$phong 1
+	$phongexponent 1024
+	$phongamount "[1 1 1 1]"
+}

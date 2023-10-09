@@ -1,14 +1,14 @@
 VertexLitGeneric
 {
-	$basetexture "crazycanadian/tools/pattern_enhancer/metal_d"
-	$bumpmap "crazycanadian/tools/pattern_enhancer/metal_n"
+	$basetexture "crazycanadian/tools/pattern_enhancer/metal_legs_d"
+	$bumpmap "crazycanadian/tools/pattern_enhancer/metal_legs_n"
 	$surfaceprop Metal
 
 	$envmap "env_cubemap"
 	$normalmapalphaenvmapmask 1
-	$envmaptint "[0.25 0.25 0.25]"
+	$envmaptint "[0.50 0.50 0.50]"
 	$envmapcontrast 1
-	$envmapfresnel 0.15
+	$envmapfresnel 0.25
 
 	$phong 1
 	$phongfresnelranges "[0.5 0.75 1]"
@@ -16,4 +16,5 @@ VertexLitGeneric
 	$halflambert 1
 	$phongexponent 25
 	$phongboost 8
+	$phongamount "[1 1 1 1]"
 }

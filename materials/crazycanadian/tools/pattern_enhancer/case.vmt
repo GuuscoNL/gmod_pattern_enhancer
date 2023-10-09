@@ -1,10 +1,19 @@
-"VertexlitGeneric"
+VertexLitGeneric
 {
-	$basetexture  crazycanadian\tools\pattern_enhancer\case_diffuse
-	$envmapmask crazycanadian\tools\pattern_enhancer\case_roughness
-	
-	$envmap env_cubemap
+	$basetexture "crazycanadian/tools/pattern_enhancer/case_d"
+	$bumpmap "crazycanadian/tools/pattern_enhancer/case_n"
+	$surfaceprop Metal
+
+	$envmap "env_cubemap"
+	$normalmapalphaenvmapmask 1
+	$envmaptint "[0.50 0.50 0.50]"
 	$envmapcontrast 1
-	$envmapsaturation 1
-	$envmaptint "[ 0.6 0.6 0.6]"
+	$envmapfresnel 0.25
+
+	$phong 1
+	$phongfresnelranges "[0 0.5 1]"
+	$phongtint "[0 0 0]"
+	$halflambert 1
+	$phongexponent 1024
+	$phongboost 8
 }
