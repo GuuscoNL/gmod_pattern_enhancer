@@ -191,6 +191,15 @@ function ENT:PhysicsCollide( data, phys )
 	end
 end
 
+function ENT:Think()
+	-- Check if the pattern enhancer is in water
+	if self:WaterLevel() == 3 then
+		self:TakeDamage(11)
+	elseif self:WaterLevel() >= 1 then
+		self:TakeDamage(2)
+	end
+end
+
 function ENT:TurnOn()
 	self:SetSkin(1)
 
