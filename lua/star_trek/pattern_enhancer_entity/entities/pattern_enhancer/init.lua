@@ -53,6 +53,7 @@ function ENT:Initialize()
 	self:SetModel("models/crazycanadian/star_trek/tools/pattern_enhancer/pattern_enhancer_unfolded.mdl")
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetUseType( SIMPLE_USE )
+	self:SetHealth(80)
 
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
@@ -155,6 +156,39 @@ function ENT:OnTakeDamage(damage)
 
 	self:TurnOff()
 	self:EmitSound("ambient/energy/spark" .. math.random(1, 6) .. ".wav")
+
+	self:SetHealth(self:Health() - damage:GetDamage())
+
+	-- make sure not to spawn two of them
+	if self:Health() <= 0 and not self.IsRemoved then
+		-- spawn broked pattern enhancer
+		self.IsRemoved = true
+		local ent = ents.Create("prop_physics")
+		ent:SetModel("models/crazycanadian/star_trek/tools/pattern_enhancer/pattern_enhancer_destroyed.mdl")
+		ent:SetPos(self:GetPos())
+		ent:SetAngles(self:GetAngles())
+		ent:Spawn()
+		ent:Activate()
+		ent.OverrideName = "Broken Pattern Enhancer"
+
+		-- Make the pattern enhancer react to the damage
+		local phys2 = ent:GetPhysicsObject()
+		if IsValid(phys2) then
+			phys2:EnableMotion(true)
+			phys2:ApplyForceCenter(damage:GetDamageForce())
+		end
+
+		ent:EmitSound("ambient/energy/zap" .. math.random(1, 3) .. ".wav", 70, 110, 0.60)
+
+		self:Remove()
+	end
+end
+
+-- Calculate collide damage
+function ENT:PhysicsCollide( data, phys )
+	if data.Speed > 400 then
+		self:TakeDamage((data.Speed - 400) / 10)
+	end
 end
 
 function ENT:TurnOn()
