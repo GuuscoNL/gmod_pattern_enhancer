@@ -147,16 +147,22 @@ end
 
 function ENT:OnTakeDamage(damage)
 	-- Make the pattern enhancer react to the damage
+	local damagePos = damage:GetDamagePosition()
+
+	if damagePos == vector_origin then
+		damagePos = self:GetPos()
+	end
+
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
 		phys:EnableMotion(true)
 		-- apply force based on weight
-		phys:ApplyForceOffset(damage:GetDamageForce() * phys:GetMass() / 100, damage:GetDamagePosition())
+		phys:ApplyForceOffset(damage:GetDamageForce() * phys:GetMass() / 100, damagePos)
 	end
 
 	-- Create the effect
 	local effectdata = EffectData()
-	effectdata:SetOrigin(damage:GetDamagePosition())
+	effectdata:SetOrigin(damagePos)
 	util.Effect("StunstickImpact", effectdata)
 
 	self:TurnOff()
@@ -198,10 +204,8 @@ end
 
 function ENT:Think()
 	-- Check if the pattern enhancer is in water
-	if self:WaterLevel() == 3 then
-		self:TakeDamage(11)
-	elseif self:WaterLevel() >= 1 then
-		self:TakeDamage(2)
+	if self:WaterLevel() > 1 then
+		self:TurnOff()
 	end
 end
 
@@ -258,7 +262,7 @@ function ENT:StartConnection()
 		if not other:IsValidNewConnection(self) or not other:IsValidNewConnection(self) then
 			continue
 		end
-		
+
 		local dist = self:GetPos():Distance(other:GetPos())
 		success, finalTrail = other:ContinueConnection(table.Copy(orgTrail), 1, dist)
 		if success then break end
