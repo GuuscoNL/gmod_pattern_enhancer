@@ -14,7 +14,7 @@ This addon adds a transport pattern enhancer entity which can be used to create 
 - There should be no static object obstructing the centre of the emitters.
 
 # Additional Notes
-You can use the [STM Handheld Tricorders](https://steamcommunity.com/sharedfiles/filedetails/?id=2792719082) to scan active pattern enhancers to discover their transport point name!
+You can use the [STM Handheld Tricorders](https://steamcommunity.com/sharedfiles/filedetails/?id=2858563573) to scan active pattern enhancers to discover their transport point name!
 
 # Credits
 
