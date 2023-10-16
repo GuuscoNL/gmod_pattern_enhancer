@@ -35,10 +35,15 @@ local BEAM_MATERIAL = Material("sprites/tp_beam001")
 local SPRITE_MATERIAL = Material( "sprites/light_glow02_add" )
 hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
 	for _, connection in ipairs(connectedEnhancers) do
+		local middlePos = Vector(0, 0, 0)
+		local success = true
 		for i, ent1ID in ipairs(connection) do
 			local ent1 = Entity(ent1ID)
 
-			if not IsValid(ent1) then break end
+			if not IsValid(ent1) then
+				success = false
+				break
+			end
 
 			local ent2
 
@@ -47,7 +52,11 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
 			else
 				ent2 = Entity(connection[i + 1])
 			end
-			if not IsValid(ent2) then return end
+			if not IsValid(ent2) then
+				success = false
+				break
+			end
+			middlePos:Add(ent1:GetPos())
 
 			local offset1 = Vector(offset:Unpack())
 			local offset2 = Vector(offset:Unpack())
@@ -61,6 +70,24 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
 				render.DrawBeam(ent1:GetPos() + offset1, ent2:GetPos() + offset2, 4, 0, 1, Color(48, 25, 138))
 				render.DrawBeam(ent1:GetPos() + offset1, ent2:GetPos() + offset2, 2, 0.5, 1.5, Color(150, 150, 150))
 			cam.End3D()
+		end
+
+		if success then
+			-- create light
+			-- print("LIGHT")
+			middlePos:Div(#connection)
+
+			local light = DynamicLight(connection[1])
+			if light then
+				light.pos = middlePos + offset
+				light.r = 0
+				light.g = 23
+				light.b = 126
+				light.brightness = 1
+				light.Decay = 500
+				light.Size = 250
+				light.DieTime = CurTime() + 1
+			end
 		end
 	end
 end)
