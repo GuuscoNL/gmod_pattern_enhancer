@@ -473,6 +473,7 @@ function ENT:AddConnection(connenctedTable)
 	}
 
 	table.insert(Star_Trek.Transporter.Externals, externalData)
+	hook.Run("Star_Trek.Transporter.ExternalsChanged")
 
 	-- Connect the other enhancers
 	table.insert(connectedEnhancers, {connectedEnts = connenctedTable, locName = name})
