@@ -74,7 +74,6 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
 
 		if success then
 			-- create light
-			-- print("LIGHT")
 			middlePos:Div(#connection)
 
 			local light = DynamicLight(connection[1])

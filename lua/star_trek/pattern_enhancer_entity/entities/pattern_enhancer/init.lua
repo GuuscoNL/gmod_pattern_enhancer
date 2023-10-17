@@ -269,10 +269,7 @@ function ENT:StartConnection()
 	end
 
 	if success then
-		print("CONNECTION FOUND")
 		self:AddConnection(finalTrail)
-	else
-		print("CONNECTION NOT FOUND")
 	end
 end
 
