@@ -513,8 +513,8 @@ hook.Add("PlayerInitialSpawn", "StarTrek.PatternEnhancer.PlayerInitialSpawn", fu
 	UpdateConnectedEnhancers(ply)
 end)
 
-hook.Add("Star_Trek.Transporter.IgnoreTransportEntity", "StarTrek.PatternEnhancer.IgnoreTransportEntity", function(ent)
-	return ent:GetClass() == "pattern_enhancer" and ent:GetNWBool("active")
+hook.Add("Star_Trek.Transporter.OverrideCanBeam", "StarTrek.PatternEnhancer.OverrideCanBeam", function(ent)
+	return ent:GetClass() == "pattern_enhancer" and not ent:GetNWBool("active")
 end)
 
 hook.Add("Star_Trek.Transporter.IgnoreInterference", "StarTrek.PatternEnhancer.IgnoreInterference", function(data, pos)
