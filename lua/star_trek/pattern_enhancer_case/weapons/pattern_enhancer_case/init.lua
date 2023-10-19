@@ -99,15 +99,15 @@ end
 
 -- Drop the weapon with the correct bodygroup
 hook.Add("PlayerDroppedWeapon", "Star_Trek.Transporter.Enhancer_case_drop", function(ply, weapon)
-	if weapon:GetClass() ~= "pattern_enhancer_case" then return end
-	weapon:SetBodyGroups(weapon:GetNWString("bodyGroups"))
+	if weapon:GetClass() == "pattern_enhancer_case" then
+		weapon:SetBodyGroups(weapon:GetNWString("bodyGroups"))
+	end
 end)
 
 -- Prevent picking up the weapon if the player already has one
 hook.Add("PlayerCanPickupWeapon", "Star_Trek.Transporter.Enhancer_case_pickup", function(ply, weapon)
-	if weapon:GetClass() ~= "pattern_enhancer_case" then return end
 
-	if ply:HasWeapon("pattern_enhancer_case") then
+	if weapon:GetClass() == "pattern_enhancer_case" and ply:HasWeapon("pattern_enhancer_case") then
 		return false
 	end
 end)
