@@ -24,21 +24,39 @@ SWEP.Slot = 3
 SWEP.SlotPos = 0
 
 
-SWEP.ViewModel = "models/weapons/c_bugbait.mdl"
+SWEP.ViewModel = "models/weapons/v_pistol.mdl"
 SWEP.WorldModel = "models/crazycanadian/star_trek/tools/pattern_enhancer/pattern_enhancer_case.mdl"
 
 SWEP.HoldType = "slam"
 
--- SWEP.BoneManip = {}
+SWEP.BoneManip = {
+    ["ValveBiped.clip"] = {
+        Pos = Vector(-100, 0, 0),
+    },
+    ["ValveBiped.base"] = {
+        Pos = Vector(-100, 0, 0),
+    },
+    ["ValveBiped.square"] = {
+        Pos = Vector(-100, 0, 0),
+    },
+    ["ValveBiped.hammer"] = {
+        Pos = Vector(-100, 0, 0),
+    },
+    ["ValveBiped.Bip01_R_Finger1"] = {
+        Ang = Angle(-20, -40, 0)
+    },
+    ["ValveBiped.Bip01_R_Hand"] = {
+    Ang = Angle(21.707, 0, -90)
+},}
 
 -- CustomViewModel stuff does nothing?
-SWEP.CustomViewModel = "models/weapons/c_bugbait.mdl"
+SWEP.CustomViewModel = "models/crazycanadian/star_trek/tools/pattern_enhancer/pattern_enhancer_case.mdl"
 SWEP.CustomViewModelBone = "ValveBiped.Bip01_R_Hand"
-SWEP.CustomViewModelOffset = Vector(0, 10, 10) 
-SWEP.CustomViewModelAngle = Angle(0, 0, 0)
+SWEP.CustomViewModelOffset = Vector(0, -18, 4)
+SWEP.CustomViewModelAngle = Angle(140, 180, 90)
 SWEP.CustomViewModelScale = 1
 
-SWEP.CustomDrawWorldModel = false
+SWEP.CustomDrawWorldModel = true
 SWEP.CustomWorldModelBone = "ValveBiped.Bip01_R_Hand"
 SWEP.CustomWorldModelOffset = Vector(0, -2, 16)
 SWEP.CustomWorldModelAngle = Angle(180, 180, 10)

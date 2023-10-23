@@ -18,9 +18,6 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-function SWEP:InitializeCustom()
-	self:SetNWString("bodyGroups", "0000")
-end
 
 function SWEP:PrimaryAttack()
 	if not IsFirstTimePredicted() then return end
@@ -85,13 +82,13 @@ end
 -- Update the bodygroup of the weapon
 function SWEP:UpdatePatternEnhacerBodygroup()
 
-	local bodygroup = "0000" -- why 4? no idea :)
+	local bodygroup = "0000" -- First bodygroup you can ignore
     if self:Clip1() == 0 then
-        bodygroup = "1111"
+        bodygroup = "0111" -- all three
     elseif self:Clip1() == 1 then
-        bodygroup = "0110"
+        bodygroup = "0101"
     elseif self:Clip1() == 2 then
-        bodygroup = "0010"
+        bodygroup = "0100"
 	end
 
 	self:SetNWString("bodyGroups", bodygroup)
