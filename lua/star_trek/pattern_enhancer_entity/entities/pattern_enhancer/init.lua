@@ -334,10 +334,29 @@ function ENT:CheckTrace(other)
         start = self:GetPos() + offset1,
         endpos = other:GetPos() + offset2,
         mask = MASK_SOLID,
-        filter = function(hitEnt) if hitEnt == self then return false else return true end end,
+        filter = function(hitEnt)
+            if hitEnt == self then
+                return false
+            end
+            -- Ignore unfrozen props
+            local phys = hitEnt:GetPhysicsObject()
+            if IsValid(phys) and phys:IsMotionEnabled() then
+                return false
+            end
+
+            return true
+        end,
     })
     if tr.HitWorld then
         return false
+    end
+
+    -- Check if the entity in the way of the beam is frozen
+    if IsValid(tr.Entity) and tr.Entity:GetClass() ~= "pattern_enhancer" then
+        local phys = tr.Entity:GetPhysicsObject()
+        if IsValid(phys) and not phys:IsMotionEnabled() then
+            return false
+        end
     end
     return true
 end
@@ -423,16 +442,27 @@ function CheckMiddlePos(middlePos)
     local tr = util.TraceLine({
         start = middlePos + offset,
         endpos = middlePos - Vector(0, 0, 10),
-        mask = MASK_SOLID_BRUSHONLY,
+        mask = MASK_SOLID,
+        filter = function(ent)
+            -- check if the entity is frozen
+            local phys = ent:GetPhysicsObject()
+            if IsValid(phys) and not phys:IsMotionEnabled() then
+                return true
+            end
+
+            return false
+        end,
     })
 
     if tr.AllSolid then
         return false, vector_origin
     end
-    if tr.HitWorld then
-        return true, tr.HitPos + Vector(0, 0, 4)
+
+    if tr.Hit == false then
+        return false, vector_origin
     end
-    return false, vector_origin
+
+    return true, tr.HitPos + Vector(0, 0, 4)
 end
 
 function ENT:AddConnection(connenctedTable)
