@@ -196,12 +196,13 @@ function ENT:OnTakeDamage(damage)
     end
 end
 
+-- Doesn't work properly
 -- Calculate collide damage
-function ENT:PhysicsCollide( data, phys )
-    if data.Speed > 400 then
-        self:TakeDamage((data.Speed - 400) / 10)
-    end
-end
+-- function ENT:PhysicsCollide( data, phys )
+--     if data.Speed > 400 then
+--         self:TakeDamage((data.Speed - 400) / 10)
+--     end
+-- end
 
 function ENT:Think()
     -- Check if the pattern enhancer is in water
