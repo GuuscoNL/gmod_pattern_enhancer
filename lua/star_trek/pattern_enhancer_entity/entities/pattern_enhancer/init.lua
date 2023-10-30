@@ -63,6 +63,7 @@ function ENT:Initialize()
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
         phys:EnableMotion(true)
+        -- phys:ApplyForceCenter(Vector(0, 0, 0)) # Too annoying, phisics does not get updated untill touched
     end
     self:SetNWBool("active", false)
     self:SetVar("connected", false)
@@ -432,6 +433,8 @@ function ENT:RemoveConnection()
         local phys = ent:GetPhysicsObject()
         if IsValid(phys) then
             phys:EnableMotion(true)
+            -- make sure the pattern enhancer updates
+            phys:ApplyForceCenter(Vector(0, 0, 0))
         end
     end
     UpdateConnectedEnhancers()
