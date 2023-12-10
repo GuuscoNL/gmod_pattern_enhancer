@@ -83,9 +83,10 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
                 light.g = 23
                 light.b = 126
                 light.brightness = 1
-                light.Decay = 500
-                light.Size = 250
-                light.DieTime = CurTime() + 1
+                light.decay = 1000 / 2
+                light.size = 250
+                light.dietime = CurTime() + 2
+                light.style = 0
             end
         end
     end
