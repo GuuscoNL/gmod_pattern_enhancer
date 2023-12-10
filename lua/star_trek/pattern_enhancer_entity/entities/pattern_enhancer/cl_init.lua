@@ -40,7 +40,7 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
         for i, ent1ID in ipairs(connection) do
             local ent1 = Entity(ent1ID)
 
-            if not IsValid(ent1) then
+            if not IsValid(ent1) or ent1:IsDormant() then
                 success = false
                 break
             end
@@ -52,7 +52,7 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
             else
                 ent2 = Entity(connection[i + 1])
             end
-            if not IsValid(ent2) then
+            if not IsValid(ent2) or ent2:IsDormant() then
                 success = false
                 break
             end
@@ -96,7 +96,7 @@ hook.Add("PostDrawTranslucentRenderables", "DrawActiveGlow", function ()
     for _, ent in ipairs(AllClassObjects) do
         if not IsValid(ent) then break end
 
-        if ent:GetNWBool("active") then
+        if ent:GetNWBool("active") and not ent:IsDormant() then
             local offset1 = Vector(offset:Unpack())
             offset1:Rotate(ent:GetAngles())
             cam.Start3D()
