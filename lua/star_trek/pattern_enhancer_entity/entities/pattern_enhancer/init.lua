@@ -261,7 +261,7 @@ function ENT:StartConnection()
     end
 
     for _, other in ipairs(self:FindNearbyPatternEnhancers()) do
-        if not other:IsValidNewConnection(self) or not other:IsValidNewConnection(self) then
+        if not other:IsValidNewConnection(self) then
             continue
         end
 
