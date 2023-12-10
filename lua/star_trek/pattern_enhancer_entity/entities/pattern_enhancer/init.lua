@@ -20,6 +20,7 @@ include("shared.lua")
 
 local RADIUS = 250
 local MAX_DEPTH = 3
+local TRIANGLETOLLERANCE = 0.35
 local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, locName = name}, ...}
 local AllIds = {}
 local offset = Vector(0, 0, 43)
@@ -322,7 +323,7 @@ end
 
 -- returns true if the distance is almost the same
 function distAlmostEqualToDist(dist, curDist)
-    return math.abs((curDist - dist) / ((curDist + dist) / 2)) < 0.35
+    return math.abs((curDist - dist) / ((curDist + dist) / 2)) < TRIANGLETOLLERANCE
 end
 
 -- returns true if the trace is not blocked
