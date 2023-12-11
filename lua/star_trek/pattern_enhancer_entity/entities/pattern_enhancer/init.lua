@@ -21,6 +21,7 @@ include("shared.lua")
 local RADIUS = 250
 local MAX_DEPTH = 3
 local TRIANGLETOLLERANCE = 0.35
+local MAXHEALTH = 80
 local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, locName = name}, ...}
 local AllIds = {}
 local offset = Vector(0, 0, 43)
@@ -59,7 +60,8 @@ function ENT:Initialize()
     self:SetModel("models/crazycanadian/star_trek/tools/pattern_enhancer/pattern_enhancer_unfolded.mdl")
     self:PhysicsInit( SOLID_VPHYSICS )
     self:SetUseType( SIMPLE_USE )
-    self:SetHealth(80)
+    self:SetMaxHealth(MAXHEALTH)
+    self:SetHealth(MAXHEALTH)
 
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
