@@ -165,9 +165,9 @@ function ENT:OnTakeDamage(damage)
     end
 
     -- Create the effect
-    local effectdata = EffectData()
-    effectdata:SetOrigin(damagePos)
-    util.Effect("StunstickImpact", effectdata)
+    local effectdataImpact = EffectData()
+    effectdataImpact:SetOrigin(damagePos)
+    util.Effect("StunstickImpact", effectdataImpact)
 
     self:TurnOff()
     self:EmitSound("ambient/energy/spark" .. math.random(1, 6) .. ".wav")
@@ -194,6 +194,12 @@ function ENT:OnTakeDamage(damage)
         end
 
         ent:EmitSound("ambient/energy/zap" .. math.random(1, 3) .. ".wav", 70, 110, 0.60)
+
+        local effectdataSmoke = EffectData()
+        local smokeOffset = Vector(offset:Unpack())
+        smokeOffset:Rotate(self:GetAngles())
+        effectdataSmoke:SetOrigin(ent:GetPos() + smokeOffset)
+        util.Effect("cball_explode", effectdataSmoke)
 
         self:Remove()
     end
