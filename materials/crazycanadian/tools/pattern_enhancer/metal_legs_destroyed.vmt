@@ -1,4 +1,4 @@
-UnlitGeneric
+VertexLitGeneric
 {
 	$basetexture "crazycanadian/tools/pattern_enhancer/metal_legs_destroyed_d"
 	$bumpmap "crazycanadian/tools/pattern_enhancer/metal_legs_destroyed_n"
