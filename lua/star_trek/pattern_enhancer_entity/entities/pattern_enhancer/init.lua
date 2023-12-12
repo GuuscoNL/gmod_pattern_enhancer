@@ -535,7 +535,7 @@ end
 util.AddNetworkString("UpdatePatternEnhancersConnected")
 function UpdateConnectedEnhancers(ply)
     net.Start("UpdatePatternEnhancersConnected")
-    net.WriteUInt(#connectedEnhancers, 7) -- Max number of connections 127
+    net.WriteUInt(#connectedEnhancers, 8) -- Max number of connections 255
 
     for _, connection in ipairs(connectedEnhancers) do
         local connectedEnts = connection["connectedEnts"]

@@ -17,11 +17,15 @@ if not istable(ENT) then Star_Trek:LoadAllModules() return end
 include("shared.lua")
 
 -- Stores all the pattern enhancers that are connected to eachother
+-- {{111, 113, 324}, ...}
 local connectedEnhancers = {}
 net.Receive("UpdatePatternEnhancersConnected", function()
-    numberConnections = net.ReadUInt(7)
+
+    numberOfConnections = net.ReadUInt(8)
+
+    -- Clear the table
     connectedEnhancers = {}
-    for i = 1, numberConnections do
+    for i = 1, numberOfConnections do
         local connection = {}
         for j = 1, 3 do
             table.insert(connection, net.ReadUInt(14))
