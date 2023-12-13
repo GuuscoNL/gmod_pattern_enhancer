@@ -40,24 +40,22 @@ local SPRITE_MATERIAL = Material( "sprites/light_glow02_add" )
 hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
     for _, connection in ipairs(connectedEnhancers) do
         local middlePos = Vector(0, 0, 0)
-        local success = true
         for i, ent1ID in ipairs(connection) do
             local ent1 = Entity(ent1ID)
 
             if not IsValid(ent1) or ent1:IsDormant() then
-                success = false
                 break
             end
 
+            -- If it's the last one, connect it to the first one
             local ent2
-
             if i == #connection then
                 ent2 = Entity(connection[1])
             else
                 ent2 = Entity(connection[i + 1])
             end
+
             if not IsValid(ent2) or ent2:IsDormant() then
-                success = false
                 break
             end
             middlePos:Add(ent1:GetPos())
@@ -75,9 +73,39 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
                 render.DrawBeam(ent1:GetPos() + offset1, ent2:GetPos() + offset2, 2, 0.5, 1.5, Color(150, 150, 150))
             cam.End3D()
         end
+    end
+end)
+
+local DECAYTIME = 0.5
+-- Dynamic lights in separate hook because it flickers otherwise
+hook.Add("Think", "PatternEnhancerDynamicLights", function()
+    for _, connection in ipairs(connectedEnhancers) do
+        local middlePos = Vector(0, 0, 0)
+        local success = true
+        for i, ent1ID in ipairs(connection) do
+            local ent1 = Entity(ent1ID)
+
+            if not IsValid(ent1) or ent1:IsDormant() then
+                success = false
+                break
+            end
+
+            -- If it's the last one, connect it to the first one
+            local ent2
+            if i == #connection then
+                ent2 = Entity(connection[1])
+            else
+                ent2 = Entity(connection[i + 1])
+            end
+
+            if not IsValid(ent2) or ent2:IsDormant() then
+                success = false
+                break
+            end
+            middlePos:Add(ent1:GetPos())
+        end
 
         if success then
-            -- create light
             middlePos:Div(#connection)
 
             local light = DynamicLight(connection[1])
@@ -87,9 +115,9 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
                 light.g = 23
                 light.b = 126
                 light.brightness = 1
-                light.decay = 1000 / 2
+                light.decay = 1000 / DECAYTIME
                 light.size = 250
-                light.dietime = CurTime() + 2
+                light.dietime = CurTime() + 1
                 light.style = 0
             end
         end
