@@ -43,7 +43,7 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
         for i, ent1ID in ipairs(connection) do
             local ent1 = Entity(ent1ID)
 
-            if not IsValid(ent1) or ent1:IsDormant() then
+            if not IsValid(ent1) then
                 break
             end
 
@@ -55,9 +55,15 @@ hook.Add("PostDrawTranslucentRenderables", "DrawBeams", function ()
                 ent2 = Entity(connection[i + 1])
             end
 
-            if not IsValid(ent2) or ent2:IsDormant() then
+            if not IsValid(ent2) then
                 break
             end
+
+            -- If both are dormant, don't draw the beam
+            if ent1:IsDormant() and ent2:IsDormant() then
+                continue
+            end
+
             middlePos:Add(ent1:GetPos())
 
             local offset1 = Vector(offset:Unpack())
@@ -82,10 +88,15 @@ hook.Add("Think", "PatternEnhancerDynamicLights", function()
     for _, connection in ipairs(connectedEnhancers) do
         local middlePos = Vector(0, 0, 0)
         local success = true
+        local amountDormant = 0
         for i, ent1ID in ipairs(connection) do
             local ent1 = Entity(ent1ID)
 
-            if not IsValid(ent1) or ent1:IsDormant() then
+            if ent1:IsDormant() then
+                amountDormant = amountDormant + 1
+            end
+
+            if not IsValid(ent1) then
                 success = false
                 break
             end
@@ -98,14 +109,14 @@ hook.Add("Think", "PatternEnhancerDynamicLights", function()
                 ent2 = Entity(connection[i + 1])
             end
 
-            if not IsValid(ent2) or ent2:IsDormant() then
+            if not IsValid(ent2) then
                 success = false
                 break
             end
             middlePos:Add(ent1:GetPos())
         end
 
-        if success then
+        if success and amountDormant < 3 then
             middlePos:Div(#connection)
 
             local light = DynamicLight(connection[1])
