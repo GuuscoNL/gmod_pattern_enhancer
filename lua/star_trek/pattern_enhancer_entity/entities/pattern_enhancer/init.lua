@@ -22,7 +22,7 @@ local RADIUS = 250
 local MAX_DEPTH = 3
 local TRIANGLETOLLERANCE = 0.35
 local MAXHEALTH = 80
-local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, locName = name}, ...}
+local connectedEnhancers = {} -- {{connectedEnts = {111, 113, 324}, markerData = MarkerData}, ...}
 local AllIds = {}
 local offset = Vector(0, 0, 43)
 
@@ -108,20 +108,19 @@ function CheckPatternEnhancers()
         if not IsValid(ent) then continue end
         newMiddlePos:Div(#connectedEnts)
 
-        -- Update the transporter location
-        for i, externalData in pairs(Star_Trek.Transporter.Externals) do
-            if externalData.Name ~= connection["locName"] then continue end
+        -- Check if the middle position is valid
+        local success, middlePosValid = CheckMiddlePos(newMiddlePos)
 
-            local success, middlePosValid = CheckMiddlePos(newMiddlePos)
-            if not success then
-                ent:RemoveConnection()
-                break
-            end
-            if not externalData.Pos:IsEqualTol(middlePosValid, 10) then
-                externalData.Pos = middlePosValid
-            end
+        if not success then
+            ent:RemoveConnection()
             break
         end
+
+        -- Update the transporter location if the middle position has changed
+        if not connection.markerData.Pos:IsEqualTol(middlePosValid, 10) then
+            connection.markerData.Pos = middlePosValid
+        end
+
     end
 end
 
@@ -256,7 +255,7 @@ function ENT:UpdateScannerData()
 
     local transporterLocName = "None"
     if connectionIndex ~= 0 then -- self is not connected to anything
-        transporterLocName = connectedEnhancers[connectionIndex]["locName"]
+        transporterLocName = connectedEnhancers[connectionIndex].markerData.Name
     end
     self.ScannerData = active .. "\nTransporter Location: " .. transporterLocName
 end
@@ -408,23 +407,8 @@ function ENT:RemoveConnection()
     local connectionIndex = self:CheckIndexConnectedEnhancers()
     if connectionIndex == 0 then return end -- self is not connected to anything
 
-    -- Get the corresponding Transporter location
-    local transportIndex
-    for i, externalData in pairs(Star_Trek.Transporter.Externals) do
-        if externalData.Name == connectedEnhancers[connectionIndex]["locName"] then
-            transportIndex = i
-            break
-        end
-    end
-
-    if transportIndex ~= nil then
-        table.remove(Star_Trek.Transporter.Externals, transportIndex)
-
-        hook.Run("Star_Trek.Transporter.ExternalsChanged")
-    end
-
     -- Remove LocName ID from the all IDs
-    local locNameID = string.Split(connectedEnhancers[connectionIndex]["locName"], " ")[3]
+    local locNameID = string.Split(connectedEnhancers[connectionIndex].markerData.Name, " ")[3]
     AllIds[locNameID] = nil
 
     local connectedEnts = table.Copy(connectedEnhancers[connectionIndex]["connectedEnts"])
@@ -505,18 +489,13 @@ function ENT:AddConnection(connenctedTable)
     AllIds[transporterLocID] = true
 
     -- Make transporter location
-    local name = "Pattern Enhancer " .. transporterLocID
     local externalData = {
-        Name = name,
-        Pos = middlePosValid,
-        IgnoreInterference = true
+        Name = "Pattern Enhancer " .. transporterLocID,
+        Pos = middlePosValid
     }
 
-    table.insert(Star_Trek.Transporter.Externals, externalData)
-    hook.Run("Star_Trek.Transporter.ExternalsChanged")
-
     -- Connect the other enhancers
-    table.insert(connectedEnhancers, {connectedEnts = connenctedTable, locName = name})
+    table.insert(connectedEnhancers, {connectedEnts = connenctedTable, markerData = externalData})
     for _, ent in ipairs(connenctedTable) do
         ent.connected = true
         ent:UpdateScannerData()
@@ -563,9 +542,18 @@ hook.Add("Star_Trek.Transporter.OverrideCanBeam", "StarTrek.PatternEnhancer.Over
 end)
 
 hook.Add("Star_Trek.Transporter.IgnoreInterference", "StarTrek.PatternEnhancer.IgnoreInterference", function(data, pos)
-    for i, externalData in pairs(Star_Trek.Transporter.Externals) do
-        if externalData.IgnoreInterference and externalData.Pos:Distance(pos) <= 40 then
+    for _, connection in pairs(connectedEnhancers) do
+
+        if connection.markerData.Pos:Distance(pos) <= 40 then
             return data.Type ~= "Unknown"
         end
+    end
+end)
+
+-- Add the transporter location to the external markers
+hook.Add("Star_Trek.Transporter.AddExternalMarkers", "StarTrek.PatternEnhancer.AddExternalMarkers", function(interface, externalMarkers, skipNetworked)
+    for _, connection in pairs(connectedEnhancers) do
+        local externalData = connection.markerData
+        table.insert(externalMarkers, externalData)
     end
 end)
