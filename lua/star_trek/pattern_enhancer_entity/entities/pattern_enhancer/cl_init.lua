@@ -92,14 +92,15 @@ hook.Add("Think", "PatternEnhancerDynamicLights", function()
         for i, ent1ID in ipairs(connection) do
             local ent1 = Entity(ent1ID)
 
-            if ent1:IsDormant() then
-                amountDormant = amountDormant + 1
-            end
-
             if not IsValid(ent1) then
                 success = false
                 break
             end
+
+            if ent1:IsDormant() then
+                amountDormant = amountDormant + 1
+            end
+
 
             -- If it's the last one, connect it to the first one
             local ent2
